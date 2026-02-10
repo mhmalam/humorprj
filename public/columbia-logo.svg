@@ -1,0 +1,19 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Columbia Crown Symbol -->
+  <g transform="translate(100, 100)">
+    <!-- Crown base circle -->
+    <circle cx="0" cy="0" r="70" fill="#B9D9EB" stroke="#003366" stroke-width="3"/>
+    
+    <!-- Crown -->
+    <g transform="translate(0, -20)">
+      <!-- Crown points -->
+      <path d="M -25,-20 L -15,-35 L -5,-20 L 5,-35 L 15,-20 L 25,-35 L 35,-20 L 35,-10 L -35,-10 Z" 
+            fill="#003366"/>
+      <!-- Crown base -->
+      <rect x="-35" y="-10" width="70" height="8" fill="#003366"/>
+    </g>
+    
+    <!-- Letter C in center -->
+    <text x="0" y="15" text-anchor="middle" font-size="50" font-weight="bold" font-family="serif" fill="#003366">C</text>
+  </g>
+</svg>
