@@ -1,7 +1,10 @@
 import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase-server'
 import { getCachedImages } from '@/lib/imageCache'
 import ImageGallery from './components/ImageGallery'
 import PostCard from './components/PostCard'
+import LoginGate from './components/LoginGate'
+import UserProfile from './components/UserProfile'
 
 interface Post {
   id: string
@@ -12,6 +15,15 @@ interface Post {
 }
 
 export default async function Home() {
+  // Check authentication
+  const supabaseAuth = await createClient()
+  const { data: { user } } = await supabaseAuth.auth.getUser()
+
+  // If not authenticated, show login gate
+  if (!user) {
+    return <LoginGate />
+  }
+
   const { data: posts, error } = await supabase
     .from('sidechat_posts')
     .select('*')
@@ -24,13 +36,15 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 font-[family-name:var(--font-inter)] relative overflow-hidden">
-      {/* Image Gallery Background - Client Component */}
-      <ImageGallery images={images} />
-
-      {/* Gradient Overlays */}
-      <div className="fixed inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/40 via-30% to-transparent pointer-events-none z-[1]"></div>
-      <div className="fixed inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-slate-950/60 pointer-events-none z-[1]"></div>
+    <div className="min-h-screen bg-slate-950 font-[family-name:var(--font-inter)]">
+      {/* Background container with gallery */}
+      <div className="fixed inset-0 overflow-hidden">
+        <ImageGallery images={images} />
+        
+        {/* Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/40 via-30% to-transparent pointer-events-none z-[1]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-slate-950/60 pointer-events-none z-[1]"></div>
+      </div>
 
       {/* Floating Course Badge */}
       <div className="fixed top-6 left-6 z-50 font-[family-name:var(--font-space-grotesk)]">
@@ -88,6 +102,9 @@ export default async function Home() {
           </p>
         </footer>
       </div>
+
+      {/* User Profile Button */}
+      <UserProfile user={user} />
     </div>
   )
 }
