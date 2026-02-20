@@ -83,10 +83,10 @@ export default function SwipeableCards({ captions, userId }: SwipeableCardsProps
     
     const preloadImages = () => {
       for (let i = currentIndex + 1; i <= Math.min(currentIndex + 3, captions.length - 1); i++) {
-        const imageUrl = captions[i]?.images?.url
-        if (imageUrl) {
+        const url = captions[i]?.images?.url || captions[i]?.url
+        if (url) {
           const img = new Image()
-          img.src = imageUrl
+          img.src = `/api/image?url=${encodeURIComponent(url)}`
         }
       }
     }
@@ -182,7 +182,7 @@ export default function SwipeableCards({ captions, userId }: SwipeableCardsProps
           <div className="relative w-full h-full bg-slate-900">
             {!imageError ? (
               <img 
-                src={imageUrl} 
+                src={imageSrc} 
                 alt="Caption image" 
                 className="w-full h-full object-cover"
                 loading="eager"
@@ -191,7 +191,6 @@ export default function SwipeableCards({ captions, userId }: SwipeableCardsProps
                   console.error('Image failed to load:', imageUrl)
                   setImageError(true)
                 }}
-                crossOrigin="anonymous"
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center bg-slate-800 p-8">
