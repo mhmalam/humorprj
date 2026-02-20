@@ -1,17 +1,27 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import VoteButton from './VoteButton'
+
+interface Caption {
+  id: string
+  post_id: string
+  caption_text: string
+  [key: string]: any
+}
 
 interface Post {
   id: string
   created_at?: string
   post_time?: string
   like_count?: number
+  captions?: Caption[]
   [key: string]: any
 }
 
 interface PostCardProps {
   post: Post
+  userId?: string
 }
 
 function getRelativeTime(timestamp: string): string {
@@ -35,7 +45,7 @@ function getRelativeTime(timestamp: string): string {
   return `${diffYears} ${diffYears === 1 ? 'year' : 'years'} ago`
 }
 
-export default function PostCard({ post }: PostCardProps) {
+export default function PostCard({ post, userId }: PostCardProps) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -153,6 +163,29 @@ export default function PostCard({ post }: PostCardProps) {
                 />
               </svg>
               <span className="text-sm font-medium">{post.like_count}</span>
+            </div>
+          )}
+
+          {post.captions && post.captions.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+              <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wide">
+                Captions ({post.captions.length})
+              </h4>
+              <div className="space-y-3">
+                {post.captions.map((caption: Caption) => (
+                  <div 
+                    key={caption.id} 
+                    className="bg-slate-800/60 rounded-lg p-3 border border-slate-700/40"
+                  >
+                    <p className="text-sm text-slate-200 mb-2">
+                      {caption.caption_text}
+                    </p>
+                    {userId && (
+                      <VoteButton captionId={caption.id} userId={userId} />
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

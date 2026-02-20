@@ -2,15 +2,21 @@ import { supabase } from '@/lib/supabase'
 import { createClient } from '@/lib/supabase-server'
 import { getCachedImages } from '@/lib/imageCache'
 import ImageGallery from './components/ImageGallery'
-import PostCard from './components/PostCard'
+import SwipeableCards from './components/SwipeableCards'
 import LoginGate from './components/LoginGate'
 import UserProfile from './components/UserProfile'
 
-interface Post {
+interface Image {
   id: string
-  created_at?: string
-  post_time?: string
-  like_count?: number
+  url: string
+  [key: string]: any
+}
+
+interface Caption {
+  id: string
+  content: string
+  image_id: string
+  images?: Image
   [key: string]: any
 }
 
@@ -24,15 +30,51 @@ export default async function Home() {
     return <LoginGate />
   }
 
-  const { data: posts, error } = await supabase
-    .from('sidechat_posts')
+  // Fetch captions
+  const { data: captionsData, error: captionsError } = await supabase
+    .from('captions')
     .select('*')
+    .not('image_id', 'is', null)
+
+  let captions = null
+
+  // Fetch images separately and join manually
+  if (captionsData && captionsData.length > 0) {
+    const imageIds = captionsData.map(c => c.image_id).filter(Boolean)
+    
+    console.log('Image IDs to fetch:', imageIds.slice(0, 5)) // Log first 5
+    
+    const { data: imagesData } = await supabase
+      .from('images')
+      .select('id, url')
+      .in('id', imageIds)
+    
+    console.log('Images fetched from DB:', imagesData?.slice(0, 5)) // Log first 5
+    
+    // Join manually and filter out captions without images
+    captions = captionsData
+      .map(caption => {
+        const matchedImage = imagesData?.find(img => img.id === caption.image_id)
+        if (!matchedImage) {
+          console.warn('No image found for caption:', caption.id, 'image_id:', caption.image_id)
+        }
+        return {
+          ...caption,
+          images: matchedImage || null
+        }
+      })
+      .filter(caption => caption.images !== null) // Only keep captions with images
+  }
+
+  const error = captionsError
+
+  console.log('Final captions with images:', captions?.slice(0, 2)) // Log first 2 for debugging
 
   // Get cached images (instant after first load)
   const images = await getCachedImages()
 
   if (error) {
-    console.error('Error fetching posts:', error)
+    console.error('Error fetching captions:', error)
   }
 
   return (
@@ -41,63 +83,61 @@ export default async function Home() {
       <div className="fixed inset-0 overflow-hidden">
         <ImageGallery images={images} />
         
-        {/* Gradient Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/40 via-30% to-transparent pointer-events-none z-[1]"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-slate-950/60 pointer-events-none z-[1]"></div>
+        {/* Clean gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/50 to-transparent pointer-events-none z-[1]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-transparent to-slate-950/70 pointer-events-none z-[1]"></div>
       </div>
 
-      {/* Floating Course Badge */}
-      <div className="fixed top-6 left-6 z-50 font-[family-name:var(--font-space-grotesk)]">
-        <div className="bg-gradient-to-br from-blue-600 to-cyan-600 text-white px-5 py-3 rounded-2xl shadow-2xl backdrop-blur-sm border border-white/20 hover:scale-105 transition-all duration-300">
-          <div className="flex items-center gap-2.5">
-            <span className="text-2xl">😂</span>
+      {/* Floating Course Badge - Clean */}
+      <div className="fixed top-4 left-4 z-50 font-[family-name:var(--font-space-grotesk)]">
+        <div className="bg-slate-800 text-white px-3 py-2 rounded-xl shadow-lg border border-slate-700 hover:scale-105 transition-all duration-300">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">😂</span>
             <div>
-              <p className="font-bold text-xs tracking-wide">THE HUMOR</p>
-              <p className="font-bold text-xs tracking-wide">PROJECT</p>
+              <p className="font-bold text-[10px] tracking-wide leading-tight">THE HUMOR</p>
+              <p className="font-bold text-[10px] tracking-wide leading-tight">PROJECT</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-12 pt-24 max-w-7xl relative z-10">
+      <div className="container mx-auto px-4 py-6 pt-20 max-w-6xl relative z-10">
         {/* Hero Header */}
-        <header className="mb-12 text-center relative px-4">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-3 tracking-tight font-[family-name:var(--font-space-grotesk)] uppercase italic">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">COLUMBIA</span>{' '}
-            <span className="text-white">SIDECHAT</span>
+        <header className="mb-6 text-center relative px-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 tracking-tight font-[family-name:var(--font-space-grotesk)] uppercase">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">CAPTION </span>
+            <span className="text-white">VOTING</span>
           </h1>
-          <p className="text-base md:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed font-medium">
-            Ivy League brainrot
+          <p className="text-sm md:text-base text-slate-300 max-w-xl mx-auto font-medium">
+            Vote on the funniest captions
           </p>
         </header>
 
         {error && (
           <div className="mb-12 p-6 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 rounded-2xl shadow-sm">
             <p className="text-red-700 dark:text-red-300 text-base">
-              Error loading posts: {error.message}
+              Error loading captions: {error.message}
             </p>
           </div>
         )}
 
-        {/* Single column scrolling feed */}
-        <div className="max-w-2xl mx-auto space-y-4">
-          {posts && posts.length > 0 ? (
-            posts.map((post: Post) => (
-              <PostCard key={post.id} post={post} />
-            ))
+        {/* Swipeable Cards */}
+        <div className="flex items-center justify-center min-h-[60vh]">
+          {captions && captions.length > 0 ? (
+            <SwipeableCards captions={captions} userId={user.id} />
           ) : !error ? (
-            <div className="col-span-full text-center py-20">
-              <div className="text-6xl mb-4 opacity-50">💭</div>
-              <p className="text-slate-400 text-lg">
-                No posts found yet
+            <div className="text-center py-12">
+              <div className="text-5xl mb-3 opacity-50">💭</div>
+              <p className="text-slate-400 text-base">
+                No captions found yet
               </p>
             </div>
           ) : null}
         </div>
 
         {/* Footer */}
-        <footer className="mt-16 text-center pb-8">
-          <p className="text-slate-600 text-sm font-[family-name:var(--font-space-grotesk)] tracking-wide">
+        <footer className="mt-8 text-center pb-4">
+          <p className="text-slate-600 text-xs font-[family-name:var(--font-space-grotesk)] tracking-wide">
             THE HUMOR PROJECT
           </p>
         </footer>
