@@ -5,6 +5,7 @@ import ImageGallery from './components/ImageGallery'
 import SwipeableCards from './components/SwipeableCards'
 import LoginGate from './components/LoginGate'
 import UserProfile from './components/UserProfile'
+import ImageCaptionGenerator from './components/ImageCaptionGenerator'
 
 interface Image {
   id: string
@@ -105,13 +106,16 @@ export default async function Home() {
         {/* Hero Header */}
         <header className="mb-6 text-center relative px-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 tracking-tight font-[family-name:var(--font-space-grotesk)] uppercase">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">CAPTION </span>
-            <span className="text-white">VOTING</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">MEME </span>
+            <span className="text-white">CAPTION LAB</span>
           </h1>
           <p className="text-sm md:text-base text-slate-300 max-w-xl mx-auto font-medium">
-            Vote on the funniest captions
+            Generate fresh meme captions and then vote on the funniest ones.
           </p>
         </header>
+
+        {/* Image upload + caption generation */}
+        <ImageCaptionGenerator />
 
         {error && (
           <div className="mb-12 p-6 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 rounded-2xl shadow-sm">
