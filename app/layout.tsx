@@ -21,8 +21,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The Humor Project | Caption Voting",
-  description: "Vote on the funniest captions",
+  title: "The Humor Project | Admin",
+  description: "Admin console",
 };
 
 export default function RootLayout({

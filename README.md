@@ -1,24 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## The Humor Project Admin
+
+This project is a **superadmin-only** Next.js admin console for a Supabase database.
+
+### What you can do
+
+- **Read** users/profiles (`profiles`)
+- **Create / Read / Update / Delete** images (`images`)
+- **Read** captions (`captions`)
+- View a small **stats dashboard** at `/admin`
+
+### Security model (important)
+
+- All `/admin/*` routes require **Google login**.
+- After login, access is granted **only if** `profiles.is_superadmin = true`.
+- Admin data access is done server-side via Supabase **service role** (this does **not** change any RLS policies).
 
 ## Getting Started
 
-First, run the development server:
+### Environment variables
+
+You need:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (server-only; never expose as `NEXT_PUBLIC_*`)
+
+### Run locally
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000` and you’ll be redirected to `/admin`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Avoid locking yourself out (bootstrapping superadmin)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+If the admin requires `profiles.is_superadmin = true`, you “bootstrap” the first superadmin using privileged access you already have:
+
+- **Option A (recommended)**: In the Supabase dashboard, after you sign in once (so a `profiles` row exists), run a SQL update in the SQL editor:
+
+```sql
+update profiles
+set is_superadmin = true
+where id = '<your auth.users id>';
+```
+
+- **Option B**: Use a one-off local script with `SUPABASE_SERVICE_ROLE_KEY` to set your profile’s `is_superadmin` to `true`.
+
+Once you’ve done that, you can access `/admin` normally.
+
+This project uses `next/font` to load fonts and Tailwind for styling.
 
 ## Learn More
 
