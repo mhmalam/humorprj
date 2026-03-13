@@ -10,17 +10,19 @@ export default async function AdminUsersPage() {
 
   if (error) {
     return (
-      <div className="rounded-[28px] border border-red-400/25 bg-red-500/10 backdrop-blur-xl p-7">
-        <div className="inline-flex items-center gap-2 rounded-full border border-red-300/20 bg-red-500/10 px-3 py-1 text-xs font-semibold tracking-widest text-red-100/80">
-          <span className="h-2 w-2 rounded-full bg-rose-300" />
-          ERROR
+      <div className="space-y-4 text-[13px] text-[var(--text-dim)]">
+        <div>
+          <div className="text-[11px] uppercase tracking-[0.12em] text-[#1f3a2a]">
+            <span className="text-[var(--accent)]">//</span> profiles
+          </div>
+          <h1 className="mt-2 text-[24px] font-medium text-white">
+            <span className="text-[var(--accent)] font-normal">$ </span>
+            <span className="font-medium">users</span>
+          </h1>
         </div>
-        <h1 className="mt-4 text-2xl font-bold font-[family-name:var(--font-space-grotesk)] tracking-tight">
-          Users / profiles
-        </h1>
-        <p className="mt-2 text-sm text-white/80 leading-relaxed">
+        <div className="border border-[var(--border)] bg-[var(--bg-surface)] rounded-[4px] p-5 text-[13px] text-red-300">
           Failed to load profiles: {error.message}
-        </p>
+        </div>
       </div>
     )
   }
@@ -31,67 +33,68 @@ export default async function AdminUsersPage() {
   ).slice(0, 8)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 text-[13px] text-[var(--text-dim)]">
       <div>
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold tracking-widest text-white/70">
-          <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_0_4px_rgba(34,211,238,0.14)]" />
-          PROFILES
+        <div className="text-[11px] uppercase tracking-[0.12em] text-[#1f3a2a]">
+          <span className="text-[var(--accent)]">//</span> profiles
         </div>
-        <h1 className="mt-4 text-3xl font-bold font-[family-name:var(--font-space-grotesk)] tracking-tight">
-          Users / profiles (read-only)
+        <h1 className="mt-2 text-[24px] font-medium text-white">
+          <span className="text-[var(--accent)] font-normal">$ </span>
+          <span className="font-medium">users</span>
         </h1>
-        <p className="mt-2 text-sm text-white/70">
-          This page reads from <code className="text-white/85">profiles</code>. Admin access is still enforced
-          by <code className="text-white/85">profiles.is_superadmin</code>.
+        <p className="mt-2 text-[12px] text-[var(--text-dim)]">
+          Read-only view of <code className="text-[var(--accent)]">profiles</code>. Admin access is still enforced by{' '}
+          <code className="text-[var(--accent)]">profiles.is_superadmin</code>.
         </p>
       </div>
 
-      <div className="rounded-[24px] border border-white/10 bg-white/[0.06] backdrop-blur-xl overflow-hidden shadow-[0_24px_90px_-60px_rgba(0,0,0,0.8)]">
-        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between gap-4">
-          <div className="text-sm font-semibold text-white/85">Profiles</div>
-          <div className="text-xs text-white/55">Showing {rows.length} row(s)</div>
+      <div className="border border-[var(--border)] bg-[var(--bg-surface)] rounded-[4px] overflow-auto">
+        <div className="px-5 py-3 border-b border-[var(--border)] flex items-center justify-between gap-4">
+          <div className="text-[12px] text-[var(--text-primary)]">profiles</div>
+          <div className="text-[11px] text-[var(--text-muted)]">showing {rows.length} row(s)</div>
         </div>
 
-        <div className="overflow-auto">
-          <table className="min-w-full text-sm">
-            <thead className="bg-slate-950/40 text-white/70 sticky top-0 backdrop-blur">
-              <tr>
+        <table className="min-w-full text-[13px]">
+          <thead>
+            <tr className="border-b border-[var(--border)]">
+              {columns.map((c) => (
+                <th
+                  key={c}
+                  className="px-4 py-2 text-left text-[10px] font-normal uppercase tracking-[0.12em] text-[var(--text-muted)]"
+                >
+                  {c}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr
+                key={(typeof r.id === 'string' && r.id) || JSON.stringify(r)}
+                className="border-b border-[#111111] hover:bg-[#0f0f0f] transition-colors"
+              >
                 {columns.map((c) => (
-                  <th key={c} className="text-left font-semibold px-4 py-3 whitespace-nowrap">
-                    {c}
-                  </th>
+                  <td key={c} className="px-4 py-2 text-[13px] text-[var(--text-primary)] whitespace-nowrap">
+                    {typeof r?.[c] === 'boolean'
+                      ? (r[c] as boolean)
+                        ? 'true'
+                        : 'false'
+                      : r?.[c] == null
+                        ? '—'
+                        : String(r[c]).slice(0, 120)}
+                  </td>
                 ))}
               </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr
-                  key={(typeof r.id === 'string' && r.id) || JSON.stringify(r)}
-                  className="border-t border-white/10 hover:bg-white/[0.04] transition"
-                >
-                  {columns.map((c) => (
-                    <td key={c} className="px-4 py-3 text-white/85 whitespace-nowrap">
-                      {typeof r?.[c] === 'boolean'
-                        ? (r[c] as boolean)
-                          ? 'true'
-                          : 'false'
-                        : r?.[c] == null
-                          ? '—'
-                          : String(r[c]).slice(0, 120)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-              {rows.length === 0 ? (
-                <tr>
-                  <td className="px-4 py-6 text-white/60" colSpan={columns.length || 1}>
-                    No profiles found.
-                  </td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </div>
+            ))}
+            {rows.length === 0 ? (
+              <tr>
+                <td className="px-4 py-6 text-[var(--text-muted)]" colSpan={columns.length || 1}>
+                  no profiles found.
+                </td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
       </div>
     </div>
   )

@@ -1,26 +1,149 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Global base (can be lighter for marketing pages) */
+  --bg: #050608;
+  --bg-surface: #0b0c10;
+  --bg-raised: #111319;
+  --border: #22252e;
+  --border-accent: #2f4f3a;
+  --text-primary: #f8fafc;
+  --text-dim: #e5e7eb;
+  --text-muted: #3a3f46;
+  --accent: #35d38a;
+  --accent-dim: #163d2c;
+  --font-ui: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  --font-mono: 'Berkeley Mono', 'TX-02', 'Courier Prime', monospace;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--bg);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  /* Subtle horizontal scanline texture */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.015),
+    rgba(255, 255, 255, 0.015) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+*::selection {
+  background-color: var(--accent-dim);
+}
+
+/* Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a #111111;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #111111;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+}
+
+/* Blinking cursor for active nav items */
+@keyframes terminal-cursor {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.terminal-cursor {
+  animation: terminal-cursor 1s steps(1, end) infinite;
+}
+
+/* Pulse for status indicators */
+@keyframes terminal-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+.terminal-pulse-dot {
+  position: relative;
+}
+
+.terminal-pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: var(--accent);
+  opacity: 0.6;
+  animation: terminal-pulse 2s ease-out infinite;
+}
+
+/* Admin console theming (scoped so sign-in and public pages can differ if needed) */
+.humor-admin-shell {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.humor-admin-shell a {
+  text-decoration: none;
+}
+
+/* Override legacy Tailwind white/blur styles inside admin shell to match the new dark theme */
+.humor-admin-shell [class*='bg-white/5'],
+.humor-admin-shell [class*='bg-white/[0.06]'],
+.humor-admin-shell [class*='bg-slate-950/35'],
+.humor-admin-shell [class*='bg-slate-950/40'] {
+  background-color: var(--bg-surface) !important;
+}
+
+.humor-admin-shell [class*='border-white/10'],
+.humor-admin-shell [class*='border-white/12'] {
+  border-color: var(--border) !important;
+}
+
+.humor-admin-shell [class*='text-white/90'],
+.humor-admin-shell [class*='text-white/85'],
+.humor-admin-shell [class*='text-white/80'],
+.humor-admin-shell [class*='text-white'] {
+  color: var(--text-primary) !important;
+}
+
+.humor-admin-shell [class*='text-white/70'],
+.humor-admin-shell [class*='text-white/60'],
+.humor-admin-shell [class*='text-white/55'],
+.humor-admin-shell [class*='text-white/45'],
+.humor-admin-shell [class*='text-white/35'] {
+  color: var(--text-dim) !important;
+}
+
+.humor-admin-shell [class*='shadow-[0_'] {
+  /* strip heavy glows on admin surfaces */
+  box-shadow: none !important;
 }

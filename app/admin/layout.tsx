@@ -50,39 +50,31 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.22),transparent_55%),radial-gradient(ellipse_at_bottom,rgba(34,211,238,0.14),transparent_55%)]" />
-      <div className="absolute inset-0 bg-slate-950" />
-
-      <header className="relative border-b border-white/10 bg-slate-950/45 backdrop-blur-xl">
-        <div className="mx-auto max-w-6xl px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-fuchsia-500 to-cyan-400 shadow-[0_18px_45px_-22px_rgba(99,102,241,0.9)]" />
+    <div className="humor-admin-shell min-h-screen bg-[var(--bg)] text-[var(--text-primary)] font-mono">
+      <div className="flex min-h-screen">
+        <aside className="w-[220px] border-r border-[var(--border)] bg-[var(--bg)] flex flex-col">
+          <div className="pt-6 pb-3 border-b border-b-[#111111]">
+            <div className="px-4">
+              <div className="text-[10px] text-[#1f3a2a]">// humor-admin</div>
+              <div className="mt-1 text-[13px] text-[var(--accent)] font-medium">$ console</div>
+            </div>
+            <div className="mt-3 px-4 text-[11px] text-[var(--text-primary)] flex flex-col gap-1">
+              <div className="truncate">{gate.viewer.email ?? gate.viewer.userId}</div>
               <div>
-                <div className="text-sm font-semibold text-white/85 font-[family-name:var(--font-space-grotesk)] tracking-wide">
-                  Admin Console
-                </div>
-                <div className="text-xs text-white/55 truncate max-w-[70vw] md:max-w-[420px]">
-                  {gate.viewer.email ?? gate.viewer.userId}
-                </div>
+                <AdminSignOutButton />
               </div>
             </div>
-            <div className="md:hidden">
-              <AdminSignOutButton />
-            </div>
           </div>
 
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex-1 overflow-y-auto pt-3">
             <AdminNav />
-            <div className="hidden md:block">
-              <AdminSignOutButton />
-            </div>
           </div>
-        </div>
-      </header>
+        </aside>
 
-      <main className="relative mx-auto max-w-6xl px-6 py-10">{children}</main>
+        <main className="flex-1 flex justify-center overflow-auto">
+          <div className="w-full max-w-[1200px] px-8 py-8">{children}</div>
+        </main>
+      </div>
     </div>
   )
 }
