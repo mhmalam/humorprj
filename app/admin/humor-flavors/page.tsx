@@ -16,7 +16,21 @@ export default async function AdminHumorFlavorsPage() {
     .limit(200)
 
   const rows = (data ?? []) as Row[]
-  const columns = Array.from(new Set(rows.flatMap((r) => Object.keys(r ?? {}))))
+  let columns = Array.from(new Set(rows.flatMap((r) => Object.keys(r ?? {}))))
+
+  // Prefer to show the flavor "identifier" (name/title/label) with its slug adjacent.
+  // The table columns are discovered dynamically from row keys, so we re-order for readability.
+  if (columns.includes('slug')) {
+    const preferredNameKeys = ['name', 'title', 'label']
+    const nameKey =
+      columns.find((c) => preferredNameKeys.includes(c)) ?? columns.find((c) => c !== 'id')
+
+    if (nameKey && nameKey !== 'slug') {
+      columns = columns.filter((c) => c !== 'slug')
+      const idx = columns.indexOf(nameKey)
+      columns.splice(Math.max(0, idx + 1), 0, 'slug')
+    }
+  }
 
   return (
     <div className="space-y-6">
