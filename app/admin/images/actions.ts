@@ -14,11 +14,14 @@ function requireString(value: FormDataEntryValue | null, field: string) {
 export async function createImage(formData: FormData) {
   const gate = await getAdminViewer()
   if (!gate.ok) throw new Error('Unauthorized')
+  const actingUserId = gate.viewer.userId
 
   const url = requireString(formData.get('url'), 'url')
   const service = createServiceClient()
 
-  const { error } = await service.from('images').insert({ url })
+  const { error } = await service
+    .from('images')
+    .insert({ url, created_by_user_id: actingUserId, modified_by_user_id: actingUserId })
   if (error) throw new Error(error.message)
 
   revalidatePath('/admin/images')
@@ -28,12 +31,16 @@ export async function createImage(formData: FormData) {
 export async function updateImage(formData: FormData) {
   const gate = await getAdminViewer()
   if (!gate.ok) throw new Error('Unauthorized')
+  const actingUserId = gate.viewer.userId
 
   const id = requireString(formData.get('id'), 'id')
   const url = requireString(formData.get('url'), 'url')
   const service = createServiceClient()
 
-  const { error } = await service.from('images').update({ url }).eq('id', id)
+  const { error } = await service
+    .from('images')
+    .update({ url, modified_by_user_id: actingUserId })
+    .eq('id', id)
   if (error) throw new Error(error.message)
 
   revalidatePath('/admin/images')

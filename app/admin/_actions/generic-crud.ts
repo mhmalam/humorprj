@@ -14,6 +14,7 @@ function requireString(value: FormDataEntryValue | null, field: string) {
 export async function createRow(formData: FormData) {
   const gate = await getAdminViewer()
   if (!gate.ok) throw new Error('Unauthorized')
+  const actingUserId = gate.viewer.userId
 
   const table = requireString(formData.get('table'), 'table')
   const payloadRaw = requireString(formData.get('payload'), 'payload')
@@ -25,6 +26,15 @@ export async function createRow(formData: FormData) {
   } catch (e) {
     throw new Error('Invalid JSON payload for create')
   }
+
+  // Ensure audit fields are always set by the server (not by the client),
+  // and let the DB handle datetime defaults/triggers.
+  delete payload.created_datetime_utc
+  delete payload.modified_datetime_utc
+  delete payload.created_by_user_id
+  delete payload.modified_by_user_id
+  payload.created_by_user_id = actingUserId
+  payload.modified_by_user_id = actingUserId
 
   const service = createServiceClient()
   const { error } = await service.from(table).insert(payload as never)
@@ -38,6 +48,7 @@ export async function createRow(formData: FormData) {
 export async function updateRow(formData: FormData) {
   const gate = await getAdminViewer()
   if (!gate.ok) throw new Error('Unauthorized')
+  const actingUserId = gate.viewer.userId
 
   const table = requireString(formData.get('table'), 'table')
   const id = requireString(formData.get('id'), 'id')
@@ -56,6 +67,14 @@ export async function updateRow(formData: FormData) {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete (payload as Record<string, unknown>).id
   }
+
+  // Ensure audit fields are always set by the server (not by the client),
+  // and let the DB handle datetime update behavior.
+  delete payload.created_datetime_utc
+  delete payload.modified_datetime_utc
+  delete payload.created_by_user_id
+  delete payload.modified_by_user_id
+  payload.modified_by_user_id = actingUserId
 
   const service = createServiceClient()
   const { error } = await service.from(table).update(payload as never).eq('id', id)
