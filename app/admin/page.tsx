@@ -60,7 +60,7 @@ export default async function AdminDashboardPage() {
       <section>
         <div className="mb-6">
           <div className="text-[11px] uppercase tracking-[0.12em] text-[#1f3a2a]">
-            <span className="text-[var(--accent)]">//</span> Overview
+            <span className="text-[var(--accent)]">{'//'}</span> Overview
           </div>
           <h1 className="mt-2 text-[26px] font-medium text-white">
             <span className="text-[var(--accent)] font-normal">$ </span>
@@ -95,7 +95,7 @@ export default async function AdminDashboardPage() {
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-[minmax(0,2fr),minmax(0,1fr)] gap-6">
           <div className="border border-[var(--border)] bg-[var(--bg-surface)] rounded-[4px] p-5">
             <div className="text-[11px] uppercase tracking-[0.12em] text-[#1f3a2a]">
-              <span className="text-[var(--accent)]">//</span> Caption style (recent)
+              <span className="text-[var(--accent)]">{'//'}</span> Caption style (recent)
             </div>
             <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
@@ -113,7 +113,7 @@ export default async function AdminDashboardPage() {
 
           <div className="border border-[var(--border)] bg-[var(--bg-surface)] rounded-[4px] p-5">
             <div className="text-[11px] uppercase tracking-[0.12em] text-[#1f3a2a]">
-              <span className="text-[var(--accent)]">//</span> Recent feed
+              <span className="text-[var(--accent)]">{'//'}</span> Recent feed
             </div>
             <p className="mt-2 text-[13px] text-[var(--text-dim)]">
               {formatInt(recent.length)} recent captions loaded from Supabase (service-role).
@@ -125,7 +125,7 @@ export default async function AdminDashboardPage() {
       <section className="space-y-4">
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="text-[13px] font-medium text-[var(--text-primary)]">
-            <span className="text-[var(--accent)]">//</span> latest captions
+            <span className="text-[var(--accent)]">{'//'}</span> latest captions
           </h2>
           <p className="text-[11px] text-[var(--text-muted)]">high-signal recent activity</p>
         </div>

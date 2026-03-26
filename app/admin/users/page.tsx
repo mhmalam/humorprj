@@ -13,7 +13,7 @@ export default async function AdminUsersPage() {
       <div className="space-y-4 text-[13px] text-[var(--text-dim)]">
         <div>
           <div className="text-[11px] uppercase tracking-[0.12em] text-[#1f3a2a]">
-            <span className="text-[var(--accent)]">//</span> profiles
+          <span className="text-[var(--accent)]">{'//'}</span> profiles
           </div>
           <h1 className="mt-2 text-[24px] font-medium text-white">
             <span className="text-[var(--accent)] font-normal">$ </span>
@@ -36,7 +36,7 @@ export default async function AdminUsersPage() {
     <div className="space-y-8 text-[13px] text-[var(--text-dim)]">
       <div>
         <div className="text-[11px] uppercase tracking-[0.12em] text-[#1f3a2a]">
-          <span className="text-[var(--accent)]">//</span> profiles
+          <span className="text-[var(--accent)]">{'//'}</span> profiles
         </div>
         <h1 className="mt-2 text-[24px] font-medium text-white">
           <span className="text-[var(--accent)] font-normal">$ </span>

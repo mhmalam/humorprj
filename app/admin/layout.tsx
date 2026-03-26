@@ -55,7 +55,7 @@ export default async function AdminLayout({
         <aside className="w-[220px] border-r border-[var(--border)] bg-[var(--bg)] flex flex-col">
           <div className="pt-6 pb-3 border-b border-b-[#111111]">
             <div className="px-4">
-              <div className="text-[10px] text-[#1f3a2a]">// humor-admin</div>
+              <div className="text-[10px] text-[#1f3a2a]">{'//'} humor-admin</div>
               <div className="mt-1 text-[13px] text-[var(--accent)] font-medium">$ console</div>
             </div>
             <div className="mt-3 px-4 text-[11px] text-[var(--text-primary)] flex flex-col gap-1">

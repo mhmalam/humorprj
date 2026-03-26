@@ -18,7 +18,7 @@ export default async function AdminImagesPage() {
     <div className="space-y-8 text-[13px] text-[var(--text-dim)]">
       <div>
         <div className="text-[11px] uppercase tracking-[0.12em] text-[#1f3a2a]">
-          <span className="text-[var(--accent)]">//</span> images
+          <span className="text-[var(--accent)]">{'//'}</span> images
         </div>
         <h1 className="mt-2 text-[24px] font-medium text-white">
           <span className="text-[var(--accent)] font-normal">$ </span>
