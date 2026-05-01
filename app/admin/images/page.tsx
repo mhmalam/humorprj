@@ -1,5 +1,5 @@
 import { createServiceClient } from '@/lib/supabase-service'
-import { createImage, deleteImage, updateImage } from '@/app/admin/images/actions'
+import { createImage, uploadImage, deleteImage, updateImage } from '@/app/admin/images/actions'
 
 function safeStr(v: unknown) {
   if (v == null) return '—'
@@ -29,19 +29,13 @@ export default async function AdminImagesPage() {
         </p>
       </div>
 
+      {/* Add via URL */}
       <section className="border border-[var(--border)] bg-[var(--bg-surface)] rounded-[4px] p-5">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div>
-            <div className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">add image</div>
-            <p className="mt-1 text-[12px] text-[var(--text-dim)]">
-              Paste a URL and create a new <code className="text-[var(--accent)]">images</code> row.
-            </p>
-          </div>
-          <div className="text-[11px] text-[var(--text-muted)]">
-            Tip: use stable CDN URLs for better previews.
-          </div>
-        </div>
-        <form action={createImage} className="mt-4 flex flex-col md:flex-row gap-3 items-end">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">add image — from url</div>
+        <p className="mt-1 text-[12px] text-[var(--text-dim)] mb-4">
+          Paste an image URL and create a new <code className="text-[var(--accent)]">images</code> row.
+        </p>
+        <form action={createImage} className="flex flex-col md:flex-row gap-3 items-end">
           <div className="flex-1">
             <label className="block text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)] mb-2">
               image url
@@ -54,6 +48,34 @@ export default async function AdminImagesPage() {
           </div>
           <button className="border border-[var(--accent)] bg-transparent px-4 py-[6px] text-[11px] font-mono font-semibold uppercase tracking-[0.16em] text-[var(--accent)] hover:bg-[var(--accent-dim)]">
             create image
+          </button>
+        </form>
+      </section>
+
+      {/* Upload from computer */}
+      <section className="border border-[var(--border)] bg-[var(--bg-surface)] rounded-[4px] p-5">
+        <div className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+          add image — upload from computer
+        </div>
+        <p className="mt-1 text-[12px] text-[var(--text-dim)] mb-4">
+          Select a file from your computer to upload it to storage and create an{' '}
+          <code className="text-[var(--accent)]">images</code> row automatically.
+        </p>
+        <form action={uploadImage} encType="multipart/form-data" className="flex flex-col md:flex-row gap-3 items-end">
+          <div className="flex-1">
+            <label className="block text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)] mb-2">
+              image file
+            </label>
+            <input
+              name="file"
+              type="file"
+              accept="image/*"
+              required
+              className="w-full border border-[var(--border)] bg-[#0a0a0a] px-4 py-2.5 text-[13px] text-[var(--text-primary)] file:mr-3 file:border-0 file:bg-[var(--accent-dim)] file:text-[var(--accent)] file:text-[11px] file:font-semibold file:uppercase file:tracking-widest file:px-3 file:py-1.5 file:cursor-pointer hover:file:bg-[rgba(61,220,132,0.2)] outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(61,220,132,0.08)]"
+            />
+          </div>
+          <button className="border border-[var(--accent)] bg-transparent px-4 py-[6px] text-[11px] font-mono font-semibold uppercase tracking-[0.16em] text-[var(--accent)] hover:bg-[var(--accent-dim)]">
+            upload &amp; save
           </button>
         </form>
       </section>
@@ -145,4 +167,3 @@ export default async function AdminImagesPage() {
     </div>
   )
 }
-

@@ -102,3 +102,86 @@ export async function deleteRow(formData: FormData) {
   }
 }
 
+const FORM_META_KEYS = new Set(['table', 'id', 'revalidatePath'])
+
+function parseFieldValue(raw: string): unknown {
+  const v = raw.trim()
+  if (v === '' || v === 'null') return null
+  if (v === 'true') return true
+  if (v === 'false') return false
+  if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?$/.test(v)) return Number(v)
+  if ((v.startsWith('{') && v.endsWith('}')) || (v.startsWith('[') && v.endsWith(']'))) {
+    try {
+      return JSON.parse(v)
+    } catch {
+      /* not JSON */
+    }
+  }
+  return raw
+}
+
+export async function createRowFromFields(formData: FormData) {
+  const gate = await getAdminViewer()
+  if (!gate.ok) throw new Error('Unauthorized')
+  const actingUserId = gate.viewer.userId
+
+  const table = requireString(formData.get('table'), 'table')
+  const revalidate = formData.get('revalidatePath')
+
+  const payload: Record<string, unknown> = {}
+  for (const [key, value] of formData.entries()) {
+    if (FORM_META_KEYS.has(key)) continue
+    if (typeof value === 'string') {
+      payload[key] = parseFieldValue(value)
+    }
+  }
+
+  delete payload.created_datetime_utc
+  delete payload.modified_datetime_utc
+  delete payload.created_by_user_id
+  delete payload.modified_by_user_id
+  payload.created_by_user_id = actingUserId
+  payload.modified_by_user_id = actingUserId
+
+  const service = createServiceClient()
+  const { error } = await service.from(table).insert(payload as never)
+  if (error) throw new Error(error.message)
+
+  if (typeof revalidate === 'string' && revalidate) {
+    revalidatePath(revalidate)
+  }
+}
+
+export async function updateRowFromFields(formData: FormData) {
+  const gate = await getAdminViewer()
+  if (!gate.ok) throw new Error('Unauthorized')
+  const actingUserId = gate.viewer.userId
+
+  const table = requireString(formData.get('table'), 'table')
+  const id = requireString(formData.get('id'), 'id')
+  const revalidate = formData.get('revalidatePath')
+
+  const payload: Record<string, unknown> = {}
+  for (const [key, value] of formData.entries()) {
+    if (FORM_META_KEYS.has(key)) continue
+    if (typeof value === 'string') {
+      payload[key] = parseFieldValue(value)
+    }
+  }
+
+  delete payload.id
+  delete payload.created_datetime_utc
+  delete payload.modified_datetime_utc
+  delete payload.created_by_user_id
+  delete payload.modified_by_user_id
+  payload.modified_by_user_id = actingUserId
+
+  const service = createServiceClient()
+  const { error } = await service.from(table).update(payload as never).eq('id', id)
+  if (error) throw new Error(error.message)
+
+  if (typeof revalidate === 'string' && revalidate) {
+    revalidatePath(revalidate)
+  }
+}
+

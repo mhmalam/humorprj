@@ -1,5 +1,5 @@
 import { createServiceClient } from '@/lib/supabase-service'
-import { createRow, updateRow, deleteRow } from '@/app/admin/_actions/generic-crud'
+import { createRowFromFields, updateRowFromFields, deleteRow } from '@/app/admin/_actions/generic-crud'
 
 type Row = Record<string, unknown> & { id?: string | null }
 
@@ -7,6 +7,9 @@ function safeStr(v: unknown) {
   if (v == null) return '—'
   return String(v)
 }
+
+const INPUT_CLS =
+  'w-full rounded-2xl border border-white/10 bg-slate-950/35 px-4 py-3.5 text-sm text-white placeholder:text-white/35 outline-none focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-400/10 transition'
 
 export default async function AdminAllowedSignupDomainsPage() {
   const service = createServiceClient()
@@ -35,32 +38,17 @@ export default async function AdminAllowedSignupDomainsPage() {
       </div>
 
       <section className="rounded-[24px] border border-white/10 bg-white/[0.06] backdrop-blur-xl p-6 shadow-[0_24px_90px_-60px_rgba(0,0,0,0.8)] overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold font-[family-name:var(--font-space-grotesk)] tracking-tight">
-              Add domain
-            </h2>
-            <p className="mt-1 text-sm text-white/65">
-              Paste a JSON object; it will be inserted into{' '}
-              <code className="text-white/85">allowed_signup_domains</code>.
-            </p>
-          </div>
-          <div className="text-xs text-white/45">
-            Tip: keep domains lowercase and normalized (e.g. <code className="text-white/80">example.edu</code>).
-          </div>
-        </div>
-        <form action={createRow} className="mt-5 space-y-3">
+        <h2 className="text-xl font-bold font-[family-name:var(--font-space-grotesk)] tracking-tight">Add domain</h2>
+        <p className="mt-1 text-sm text-white/65">
+          Tip: keep domains lowercase and normalized (e.g. <code className="text-white/80">example.edu</code>).
+        </p>
+        <form action={createRowFromFields} className="mt-5 space-y-3">
           <input type="hidden" name="table" value="allowed_signup_domains" />
           <input type="hidden" name="revalidatePath" value="/admin/allowed-signup-domains" />
-          <label className="block text-xs font-semibold tracking-widest text-white/55 mb-2">
-            PAYLOAD (JSON)
-          </label>
-          <textarea
-            name="payload"
-            rows={3}
-            className="w-full rounded-2xl border border-white/10 bg-slate-950/35 px-4 py-3.5 text-xs text-white font-mono placeholder:text-white/35 outline-none focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-400/10 transition"
-            placeholder='{"domain":"example.edu"}'
-          />
+          <div>
+            <label className="block text-xs font-semibold tracking-widest text-white/55 mb-2">DOMAIN</label>
+            <input name="domain" type="text" placeholder="example.edu" required className={INPUT_CLS} />
+          </div>
           <button className="rounded-2xl bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-cyan-400 px-6 py-3.5 text-sm font-bold text-slate-950 transition hover:brightness-105 shadow-[0_18px_45px_-28px_rgba(99,102,241,0.95)]">
             Allow domain
           </button>
@@ -80,7 +68,7 @@ export default async function AdminAllowedSignupDomainsPage() {
         ) : (
           <div className="divide-y divide-white/10">
             {rows.map((r) => (
-              <div key={safeStr(r.id) || JSON.stringify(r)} className="p-6 space-y-3">
+              <div key={safeStr(r.id)} className="p-6 space-y-3">
                 <div className="flex items-center justify-between gap-4">
                   <div className="text-xs text-white/55 truncate">
                     id: <span className="text-white/80">{safeStr(r.id)}</span>
@@ -94,16 +82,19 @@ export default async function AdminAllowedSignupDomainsPage() {
                     </button>
                   </form>
                 </div>
-                <form action={updateRow} className="space-y-2">
+                <form action={updateRowFromFields} className="space-y-3">
                   <input type="hidden" name="table" value="allowed_signup_domains" />
                   <input type="hidden" name="id" value={safeStr(r.id)} />
                   <input type="hidden" name="revalidatePath" value="/admin/allowed-signup-domains" />
-                  <textarea
-                    name="payload"
-                    rows={4}
-                    defaultValue={JSON.stringify(r, null, 2)}
-                    className="w-full rounded-2xl border border-white/10 bg-slate-950/35 px-4 py-3 text-xs text-white font-mono outline-none focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-400/10 transition"
-                  />
+                  <div>
+                    <label className="block text-xs font-semibold tracking-widest text-white/55 mb-2">DOMAIN</label>
+                    <input
+                      name="domain"
+                      type="text"
+                      defaultValue={safeStr(r.domain)}
+                      className={INPUT_CLS}
+                    />
+                  </div>
                   <div className="flex items-center justify-end">
                     <button className="rounded-xl border border-white/10 bg-white/10 hover:bg-white/15 px-3.5 py-2 text-xs font-semibold text-white transition">
                       Save changes
@@ -121,4 +112,3 @@ export default async function AdminAllowedSignupDomainsPage() {
     </div>
   )
 }
-
